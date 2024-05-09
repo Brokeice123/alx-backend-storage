@@ -1,0 +1,1 @@
+A GitHub repository for learning MySQL, NoSQL and Redis database management, storage, and querying techniques within the context of backend development
