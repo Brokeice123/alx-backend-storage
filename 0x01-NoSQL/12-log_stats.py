@@ -20,6 +20,6 @@ def log_stats():
     for method in methods:
         method_count = collection.count_documents({'method': method})
         print(f"\tmethod {method}: {method_count}")
-    
+
     status_checks = collection.count_documents({'method': 'GET': 'path': '/status'})
     print(f"{status_checks} status check")
