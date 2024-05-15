@@ -21,6 +21,38 @@ def count_calls(method: Callable) -> Callable:
         return method(self, *args, **kwargs)
     return wrapper
 
+def call_history(method: Callable) -> Callable:
+    """
+    Decorator that stores call history (inputs and outputs) for a function.
+
+    Args:
+        method: The method to be decorated (Callable).
+
+    Returns:
+        A callable that wraps the original method and stores call history.
+    """
+    input_list = method.__qualname__ + ":inputs"
+    output_list = method.__qualname__ + ":outputs"
+
+    @wraps(method)
+    def wrapper(self, *args) -> bytes:
+        """
+        Wrapper function that stores call history and executes the decorated function.
+
+        Args:
+            self: The instance of the Cache class.
+            *args: Arguments passed to the original method.
+
+        Returns:
+            The return value of the original method.
+        """
+        input = str(args)
+        self._redis.rpush(input_list, input)
+        output = method(self, *args)
+        self._redis.rpush(output_list, output)
+        return output
+    return wrapper
+
 
 class Cache:
     def __init__(self):
