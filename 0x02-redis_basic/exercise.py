@@ -21,6 +21,7 @@ def count_calls(method: Callable) -> Callable:
         return method(self, *args, **kwargs)
     return wrapper
 
+
 def call_history(method: Callable) -> Callable:
     """
     Decorator that stores call history (inputs and outputs) for a function.
@@ -37,7 +38,8 @@ def call_history(method: Callable) -> Callable:
     @wraps(method)
     def wrapper(self, *args) -> bytes:
         """
-        Wrapper function that stores call history and executes the decorated function.
+        Wrapper function that stores call history and executes the
+        decorated function.
 
         Args:
             self: The instance of the Cache class.
@@ -53,6 +55,7 @@ def call_history(method: Callable) -> Callable:
         return output
     return wrapper
 
+
 def replay(method: Callable) -> None:
     """
     Displays the call history for a decorated function.
@@ -61,7 +64,7 @@ def replay(method: Callable) -> None:
     name = method.__qualname__
 
     calls = cache.get(name).decode("utf-8")
-    
+
     print(f"{name} was called {calls} times:")
 
     inputs = cache.lrange(name + ":inputs", 0, -1)
@@ -95,16 +98,20 @@ class Cache:
         self._redis.set(key, data)
         return key
 
-    def get(self, key: str, fn: Optional[Callable[[bytes], Any]] = None) -> Any:
+    def get(self, key: str,
+            fn: Optional[Callable[[bytes], Any]] = None) -> Any:
         """
-        Retrieves data from Redis using the provided key and optionally applies a conversion function.
+        Retrieves data from Redis using the provided key and optionally applies
+        a conversion function.
 
         Args:
         key: The key used to store the data in Redis.
-        fn: An optional callable function to convert the retrieved data (default: None).
+        fn: An optional callable function to convert the retrieved data
+        (default: None).
 
         Returns:
-        The retrieved data (converted if a conversion function is provided) or None if the key doesn't exist.
+        The retrieved data (converted if a conversion function is provided)
+        or None if the key doesn't exist.
         """
         data = self._redis.get(key)
         if data is None:
@@ -120,13 +127,14 @@ class Cache:
         key: The key used to store the data in Redis.
 
         Returns:
-        The retrieved data as a decoded string or None if the key doesn't exist.
+        The retrieved data as a decoded string or None if the key doesn't
+        exist.
         """
         return self.get(key, fn=lambda d: d.decode("utf-8"))
 
     def get_int(self, key: str) -> Optional[int]:
         """
-        Retrieves data from Redis using the provided key and converts it to 
+        Retrieves data from Redis using the provided key and converts it to
         an integer.
 
         Args:
