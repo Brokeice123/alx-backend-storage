@@ -3,6 +3,7 @@
 Python module that uses Redis NoSQL for data storage
 """
 
+from typing import Union
 import uuid
 import redis
 
@@ -15,7 +16,7 @@ class Cache:
         self._redis = redis.Redis()
         self._redis.flushdb()
 
-    def store(self, data: bytes | str | int | float) -> str:
+    def store(self, data: Union[bytes, str, int, float]) -> str:
         """
         Stores the provided data in Redis and returns the generated key.
 
