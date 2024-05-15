@@ -3,10 +3,23 @@
 Python module that uses Redis NoSQL for data storage
 """
 
+from functools import wraps
 from typing import Any, Callable, Optional, Union
 import uuid
 import redis
 
+
+def count_calls(method: Callable) -> Callable:
+    """Decorator that counts the number of times a method of the
+    Cache class is called"""
+    key = method.__qualname__
+
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        """ the wrapper functions """
+        self._redis.incr(key)
+        return method(self, *args, **kwargs)
+    return wrapper
 
 class Cache:
     def __init__(self):
