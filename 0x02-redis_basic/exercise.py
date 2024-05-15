@@ -3,7 +3,7 @@
 Python module that uses Redis NoSQL for data storage
 """
 
-from typing import Union
+from typing import Any, Callable, Optional, Union
 import uuid
 import redis
 
@@ -30,3 +30,46 @@ class Cache:
         key = str(uuid.uuid4())
         self._redis.set(key, data)
         return key
+
+    def get(self, key: str, fn: Optional[Callable[[bytes], Any]] = None) -> Any:
+        """
+        Retrieves data from Redis using the provided key and optionally applies a conversion function.
+
+        Args:
+        key: The key used to store the data in Redis.
+        fn: An optional callable function to convert the retrieved data (default: None).
+
+        Returns:
+        The retrieved data (converted if a conversion function is provided) or None if the key doesn't exist.
+        """
+        data = self._redis.get(key)
+        if data is None:
+            return None
+        return fn(data) if fn else data
+
+    def get_str(self, key: str) -> Optional[str]:
+        """
+        Retrieves data from Redis using the provided key and converts it
+          to a string using UTF-8 decoding.
+
+        Args:
+        key: The key used to store the data in Redis.
+
+        Returns:
+        The retrieved data as a decoded string or None if the key doesn't exist.
+        """
+        return self.get(key, fn=lambda d: d.decode("utf-8"))
+
+    def get_int(self, key: str) -> Optional[int]:
+        """
+        Retrieves data from Redis using the provided key and converts it to 
+        an integer.
+
+        Args:
+        key: The key used to store the data in Redis.
+
+        Returns:
+        The retrieved data as an integer or None if the key doesn't exist or
+        the data cannot be converted to an integer.
+        """
+        return self.get(key, fn=int)
